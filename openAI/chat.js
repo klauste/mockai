@@ -1,6 +1,7 @@
 const express = require("express");
-const { getRandomContents } = require("../utils/randomContents");
+const { getRandomContents, getTranslation } = require("../utils/randomContents");
 const { tokenize } = require("../utils/tokenize");
+const { getContentType } = require("../utils/getContentType");
 
 const router = express.Router();
 
@@ -13,8 +14,6 @@ router.post("/v1/chat/completions", (req, res) => {
     mockFixedContents,
     model,
   } = req.body;
-  const randomResponses = getRandomContents();
-
   // Check if 'messages' is provided and is an array
   if (!messages || !Array.isArray(messages)) {
     return res
@@ -27,6 +26,11 @@ router.post("/v1/chat/completions", (req, res) => {
     return res.status(400).json({ error: 'Invalid "stream" in request body' });
   }
 
+  const lastMessage = messages[messages.length - 1];
+  const contentType = getContentType(lastMessage.content);
+  const randomContent = contentType === 'translate' ?
+      getTranslation(lastMessage.content) : getRandomContents(contentType);
+
   // Get response content
   let content;
   switch (mockType) {
@@ -34,8 +38,7 @@ router.post("/v1/chat/completions", (req, res) => {
       content = messages[messages.length - 1].content;
       break;
     case "random":
-      content =
-        randomResponses[Math.floor(Math.random() * randomResponses.length)];
+      content = randomContent;
       break;
     case "fixed":
       content = mockFixedContents;

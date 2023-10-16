@@ -6,11 +6,8 @@ const chatRoutes = require("./openAI/chat");
 const textRoutes = require("./openAI/text");
 const imgRoutes = require("./openAI/image");
 const embeddingRoutes = require("./openAI/embeddings");
-const { load: loadRandomContents } = require("./utils/randomContents");
 
 const start = async () => {
-  await loadRandomContents();
-
   const port = process.env.SERVER_PORT || 5001;
   app.use(express.json());
   app.use(chatRoutes);
