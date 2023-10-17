@@ -1,0 +1,13 @@
+# This file is for declaring repo config to create the internal base image repository with:
+#   ENV=int DOCKER_TARGET_ENV=ldc make ecr-create
+#
+# Otherwise, this can't innately be used to deploy this project
+name: 'api-mockai'
+
+task:
+    cpu: 256
+    memory: 512
+    containers:
+        'base-image-repo':
+            image: 'int/api-mockai:${tag_version}'
+            from_ecr: True

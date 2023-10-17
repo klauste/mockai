@@ -1,0 +1,46 @@
+version: '3.7'
+
+services:
+    nginx:
+        build:
+            context: .
+            dockerfile: lde_config/lde/nginx/Dockerfile
+        volumes:
+            - .:/srv/api/mockai:ro,delegated
+        networks:
+            - net
+            - lde_net
+        labels:
+            - "learnosity.app_name=api-mockai"
+            - "learnosity.app_root=${PWD}"
+            - "traefik.frontend.rule=Host:authorapi.dev.learnosity.com"
+            - "traefik.port=80"
+            - "traefik.docker.network=lde_net"
+            - "traefik.frontend.entryPoints=https"
+            - "traefik.backend.loadbalancer.swarm=true"
+            - "traefik.backend.loadbalancer.method=drr"
+            - "traefik.enable=true"
+            - "traefik.http.routers.mockai.entrypoints=websecure,web"
+            - "traefik.http.routers.mockai.rule=Host(`mockai.dev.learnosity.com`)"
+            - "traefik.http.routers.mockai.tls=true"
+        depends_on:
+            - node
+    node:
+        build:
+            context: .
+            dockerfile: lde_config/lde/node/Dockerfile
+        working_dir: /srv/api/mockai
+        volumes:
+            - .:/srv/api/mockai:ro,delegated
+        networks:
+            - net
+            - lde_internal
+        ports:
+            - 5002:5002
+
+networks:
+    net:
+    lde_net:
+        external: true
+    lde_internal:
+        external: true

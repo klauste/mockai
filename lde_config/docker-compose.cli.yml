@@ -1,0 +1,28 @@
+version: '3.7'
+
+# NOTE: service names defined here are also used in distribution/deployment
+#
+# If you change the name, you will also need to update:
+# * the relevant CONTAINER_* variable in Makefile
+# * any corresponding services in lde_config/docker-compose.*.yml files
+#
+# If the service has a Dockerfile (i.e. it creates a base image), also update:
+# * the corresponding lde_config/[ENV]/* directory names
+# * any relevant image name tags ${tag_version}-* in lde_config/dist/*.yml files
+#
+# NEW services with Dockerfiles must be added to the Makefile DOCKER_BASE_IMAGES list
+# AND they must have a build context of the root directory i.e. "."
+
+services:
+    node-cli:
+        build:
+            context: .
+            dockerfile: lde_config/lde/node-cli/Dockerfile
+        working_dir: /srv/api/mockai
+        volumes:
+            - .:/srv/api/mockai:z,delegated
+        networks:
+            - net
+
+networks:
+    net:
