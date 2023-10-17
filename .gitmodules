@@ -1,0 +1,3 @@
+[submodule ".project_extension"]
+	path = .project_extension
+	url = git@github.com:Learnosity/tools-common-extensions.git

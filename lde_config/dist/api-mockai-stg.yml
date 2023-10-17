@@ -1,0 +1,45 @@
+name: 'api-mockai'
+alb:
+    host_paths:
+        - 'mockai.*'
+    health_check:
+        path: '/'
+        interval: 20
+        timeout: 5
+        healthy_count: 2
+        unhealthy_count: 3
+    route53:
+        hosted_zone: 'staging.learnosity.com'
+        record: 'mockai'
+    priority: 988
+
+task:
+    cpu: 256
+    memory: 512
+    containers:
+        'nginx':
+            image: 'ldc/api-mockai:${tag_version}-nginx'
+            from_ecr: True
+            alb_target: true
+            ports:
+                - 80/tcp
+            env:
+                'PORT': '80'
+
+        'node':
+            image: 'ldc/api-mockai:${tag_version}-node'
+            from_ecr: True
+            ports:
+                - 5002/tcp
+            env:
+                'PORT': '5002'
+
+tags:
+    'app_name': 'api-mockai'
+    'lrn:Project': 'chatgpt'
+    'lrn:Team': 'Jarvis'
+    'lrn:Dept': 'engineering'
+    'lrn:Component': 'authoring'
+    'lrn:Lifecycle': 'active'
+    'lrn:DataClassification': 'private'
+    'lrn:Reliability': 'secondary'
